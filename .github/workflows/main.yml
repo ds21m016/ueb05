@@ -37,3 +37,4 @@ jobs:
           # Applies to Web Apps(Windows and Linux) and Web App Containers(linux). Multi container scenario not supported. Publish profile (*.publishsettings) file contents with Web Deploy secrets
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
           images: index.docker.io/ds21m016/ueb05:${{ github.sha }}
+
