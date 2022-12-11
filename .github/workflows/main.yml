@@ -1,0 +1,39 @@
+name: fhtwhw
+
+on:
+  push:
+  workflow_dispatch: # zum manuellen Ausführen/Testen
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+      
+      # log into Docker Repository
+      - name: Docker Login
+        uses: docker/login-action@v2.1.0
+        with:
+          # Username used to log against the Docker registry
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          # Password or personal access token used to log against the Docker registry
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+      # build and publish Docker image
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v3.2.0
+        with:
+          push: true
+          tags: index.docker.io/ds21m016/ueb05:${{ github.sha }}
+          file: ./Dockerfile
+      
+      # publish as Azure WebApp
+      - name: Azure WebApp
+        uses: Azure/webapps-deploy@v2.2.5
+        with:
+          # Name of the Azure Web App
+          app-name: ueb05
+          # Applies to Web Apps(Windows and Linux) and Web App Containers(linux). Multi container scenario not supported. Publish profile (*.publishsettings) file contents with Web Deploy secrets
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          images: index.docker.io/ds21m016/ueb05:${{ github.sha }}
